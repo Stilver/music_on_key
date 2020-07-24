@@ -13,7 +13,7 @@ clock = pygame.time.Clock()
 # constants
 MUSIC_FOLDER = sys.argv[1] if len(sys.argv) > 1 else 'music_on_key'
 PLAYING = False
-PLAY_KEY = "up"
+PLAY_KEY = "dot"
 FOUND_MUSIC = []
 
 # scan for music
@@ -26,7 +26,6 @@ for folder, childs, files in os.walk(MUSIC_FOLDER):
 def load_music():
     picked_melody = random.choice(FOUND_MUSIC)
     audio = MP3(picked_melody)
-    print(audio.info.sample_rate)
     pygame.mixer.quit()
     pygame.mixer.init(frequency=audio.info.sample_rate, allowedchanges=0)
     pygame.mixer.music.load(picked_melody)
@@ -43,7 +42,7 @@ while True:
 
         pygame.mixer.music.set_volume(0)
         pygame.mixer.music.play()
-        for i in range(0, 100):
+        for i in range(0, 50):
             pygame.mixer.music.set_volume(i/100)
             sleep(0.04)
 
