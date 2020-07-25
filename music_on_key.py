@@ -1,13 +1,13 @@
 import os
 import random
+import sys
 from time import sleep
 
 import keyboard
 import pygame
-import sys
 from mutagen.mp3 import MP3
 
-
+# pygame's feature for managing games fps and reducing CPU usage
 clock = pygame.time.Clock()
 
 # constants
@@ -17,7 +17,7 @@ PLAY_KEY = "dot"
 FOUND_MUSIC = []
 
 # scan for music
-for folder, childs, files in os.walk(MUSIC_FOLDER):
+for folder, children, files in os.walk(MUSIC_FOLDER):
     music_files = [os.path.join(os.getcwd(), folder, file) for file in files if "mp3" in file]
     FOUND_MUSIC.extend(music_files)
 
@@ -60,3 +60,5 @@ while True:
 
         while keyboard.is_pressed(PLAY_KEY):
             continue
+
+    clock.tick(60)
