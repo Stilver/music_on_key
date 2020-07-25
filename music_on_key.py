@@ -13,8 +13,9 @@ clock = pygame.time.Clock()
 # constants
 MUSIC_FOLDER = sys.argv[1] if len(sys.argv) > 1 else 'music_on_key'
 PLAYING = False
-PLAY_KEY = "dot"
+PLAY_KEY = "`"
 FOUND_MUSIC = []
+MAX_VOLUME = 20  # from 0 to 100
 
 # scan for music
 for folder, children, files in os.walk(MUSIC_FOLDER):
@@ -32,33 +33,41 @@ def load_music():
     return picked_melody
 
 
+def play_music():
+    pygame.mixer.music.set_volume(0)
+    pygame.mixer.music.play()
+    for i in range(0, MAX_VOLUME):
+        pygame.mixer.music.set_volume(i / 100)
+        sleep(0.04)
+
+
 next_melody = load_music()
 
 
 while True:
     if keyboard.is_pressed(PLAY_KEY) and not PLAYING:
-        print(f"Playing: {next_melody}")
         PLAYING = True
-
-        pygame.mixer.music.set_volume(0)
-        pygame.mixer.music.play()
-        for i in range(0, 50):
-            pygame.mixer.music.set_volume(i/100)
-            sleep(0.04)
+        print(f"Playing: {next_melody}")
+        play_music()
 
         while keyboard.is_pressed(PLAY_KEY):
             continue
 
     elif keyboard.is_pressed(PLAY_KEY) and PLAYING:
-        print("Stopping")
         PLAYING = False
+        print("Stopping")
 
-        pygame.mixer.music.fadeout(4000)
-        sleep(4)
+        pygame.mixer.music.fadeout(3000)
+        sleep(3)
 
         next_melody = load_music()
 
         while keyboard.is_pressed(PLAY_KEY):
             continue
+
+    elif PLAYING and not pygame.mixer.music.get_busy():
+        next_melody = load_music()
+        print(f"Playing: {next_melody}")
+        play_music()
 
     clock.tick(60)
