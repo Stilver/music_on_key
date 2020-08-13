@@ -10,14 +10,16 @@ from mutagen.mp3 import MP3
 # pygame's feature for managing games fps and reducing CPU usage
 clock = pygame.time.Clock()
 
-# constants
-MUSIC_FOLDER = sys.argv[1] if len(sys.argv) > 1 else 'music_on_key'
-PLAYING = False
+# options
+MUSIC_FOLDER = sys.argv[1] if len(sys.argv) > 1 else 'music_to_play'
 PLAY_KEY = "`"
-FOUND_MUSIC = []
-MAX_VOLUME = 20  # from 0 to 100
+MAX_VOLUME = 18  # from 0 to 100
+FADEIN_SECONDS = 2
+FADEOUT_SECONDS = 2
 
 # scan for music
+FOUND_MUSIC = []
+
 for folder, children, files in os.walk(MUSIC_FOLDER):
     music_files = [os.path.join(os.getcwd(), folder, file) for file in files if "mp3" in file]
     FOUND_MUSIC.extend(music_files)
@@ -34,20 +36,21 @@ def load_music():
 
 
 def play_music():
+    next_melody = load_music()
+    print(f"Playing: {next_melody}")
+
     pygame.mixer.music.set_volume(0)
     pygame.mixer.music.play()
     for i in range(0, MAX_VOLUME):
         pygame.mixer.music.set_volume(i / 100)
-        sleep(0.04)
+        sleep(FADEIN_SECONDS / MAX_VOLUME)
 
 
-next_melody = load_music()
-
+PLAYING = False
 
 while True:
     if keyboard.is_pressed(PLAY_KEY) and not PLAYING:
         PLAYING = True
-        print(f"Playing: {next_melody}")
         play_music()
 
         while keyboard.is_pressed(PLAY_KEY):
@@ -57,17 +60,13 @@ while True:
         PLAYING = False
         print("Stopping")
 
-        pygame.mixer.music.fadeout(3000)
-        sleep(3)
-
-        next_melody = load_music()
+        pygame.mixer.music.fadeout(FADEOUT_SECONDS * 1000)
+        sleep(FADEOUT_SECONDS)
 
         while keyboard.is_pressed(PLAY_KEY):
             continue
 
     elif PLAYING and not pygame.mixer.music.get_busy():
-        next_melody = load_music()
-        print(f"Playing: {next_melody}")
         play_music()
 
     clock.tick(60)
